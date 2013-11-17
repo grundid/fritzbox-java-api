@@ -36,6 +36,11 @@ public class FritzTemplate {
 		}
 	}
 
+	private MultiValueMap<String, String> prepareRequest() {
+		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		return request;
+	}
+
 	public String getSessionId(String password) {
 		SessionInfo sessionInfo = restOperations.getForObject(baseUrl + "/login_sid.lua", SessionInfo.class);
 		if (sessionInfo.getSid().equals(EMPTY_SESSION_ID)) {
@@ -50,5 +55,24 @@ public class FritzTemplate {
 		}
 		sessionId = sessionInfo.getSid();
 		return sessionId;
+	}
+
+	public void activateGuestAccess(String guestSsid, String wpaKey) {
+		MultiValueMap<String, String> request = prepareRequest();
+		request.add("activate_guest_access", "on");
+		request.add("down_time_activ", "on");
+		request.add("down_time_value", "30");
+		request.add("guest_ssid", guestSsid);
+		request.add("wlan_security", "0");
+		request.add("wpa_key", wpaKey);
+		request.add("wpa_modus", "4");
+		request.add("btnSave", "");
+		restOperations.postForEntity(baseUrl + "/wlan/guest_access.lua?sid={sid}", request, String.class, sessionId);
+	}
+
+	public void deactivateGuestAccess() {
+		MultiValueMap<String, String> request = prepareRequest();
+		request.add("btnSave", "");
+		restOperations.postForEntity(baseUrl + "/wlan/guest_access.lua?sid={sid}", request, String.class, sessionId);
 	}
 }
