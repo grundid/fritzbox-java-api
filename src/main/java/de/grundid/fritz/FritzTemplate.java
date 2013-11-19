@@ -19,9 +19,11 @@ public class FritzTemplate {
 	private String baseUrl = "http://fritz.box";
 	private RestTemplate restOperations;
 	private String sessionId;
+	private String password;
 
-	public FritzTemplate(RestTemplate restOperations) {
+	public FritzTemplate(RestTemplate restOperations, String password) {
 		this.restOperations = restOperations;
+		this.password = password;
 		restOperations.getMessageConverters().add(new FormHttpMessageConverter());
 	}
 
@@ -37,11 +39,13 @@ public class FritzTemplate {
 	}
 
 	private MultiValueMap<String, String> prepareRequest() {
+		if (sessionId == null)
+			getSessionId();
 		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		return request;
 	}
 
-	public String getSessionId(String password) {
+	public String getSessionId() {
 		SessionInfo sessionInfo = restOperations.getForObject(baseUrl + "/login_sid.lua", SessionInfo.class);
 		if (sessionInfo.getSid().equals(EMPTY_SESSION_ID)) {
 			String response = createChallengeResponse(sessionInfo.getChallenge(), password);

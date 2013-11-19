@@ -1,6 +1,6 @@
 package de.grundid.fritz;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +14,7 @@ public class FritzTemplateTest {
 	public void before() {
 		RestTemplate restTemplate = new RestTemplate();
 		TestUtils.prepareRestTemplateForLogin(restTemplate);
-		fritzTemplate = new FritzTemplate(restTemplate);
+		fritzTemplate = new FritzTemplate(restTemplate, "test");
 	}
 
 	@Test
@@ -25,7 +25,7 @@ public class FritzTemplateTest {
 
 	@Test
 	public void itShouldGetSessionId() throws Exception {
-		String sessionId = fritzTemplate.getSessionId("test");
+		String sessionId = fritzTemplate.getSessionId();
 		assertEquals("1234567890", sessionId);
 	}
 }
