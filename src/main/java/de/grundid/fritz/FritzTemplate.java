@@ -62,15 +62,23 @@ public class FritzTemplate {
 	}
 
 	public void activateGuestAccess(String guestSsid, String wpaKey) {
+		activateGuestAccess(guestSsid, wpaKey, null);
+	}
+
+	public void activateGuestAccess(String guestSsid, String wpaKey, GuestAccessSettings settings) {
 		MultiValueMap<String, String> request = prepareRequest();
 		request.add("activate_guest_access", "on");
-		request.add("down_time_activ", "on");
-		request.add("down_time_value", "30");
 		request.add("guest_ssid", guestSsid);
 		request.add("wlan_security", "0");
 		request.add("wpa_key", wpaKey);
 		request.add("wpa_modus", "4");
 		request.add("btnSave", "");
+		if (settings != null) {
+			if (settings.hasTimeout()) {
+				request.add("down_time_activ", "on");
+				request.add("down_time_value", "" + settings.getDisableAfterTime().getMinutes());
+			}
+		}
 		restOperations.postForEntity(baseUrl + "/wlan/guest_access.lua?sid={sid}", request, String.class, sessionId);
 	}
 
